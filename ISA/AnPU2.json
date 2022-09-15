@@ -1,0 +1,251 @@
+{
+  "DEFINE": {
+    "GENERAL": {},
+    "INDIRECT_MEMORY_ACCESS": {
+      "none": "0",
+      "inc": "1",
+      "dec": "2",
+      "reset": "3"
+    },
+    "REGISTERS": {
+      "A": "0",
+      "B": "1",
+      "C": "2",
+      "D": "3",
+      "E": "4",
+      "F": "5",
+      "G": "6",
+      "H": "7",
+      "$0": "0",
+      "$1": "1",
+      "$2": "2",
+      "$3": "3",
+      "$4": "4",
+      "$5": "5",
+      "$6": "6",
+      "$7": "7"
+    }
+  },
+  "INSTRUCTIONS": {
+    "NOP": {
+      "OPCODE": ["00000"],
+      "OPERANDS": ["000"],
+      "KEYWORDS": ["REGISTERS"]
+    },
+    "LDA": {
+      "OPCODE": ["00001"],
+      "OPERANDS": ["---"],
+      "KEYWORDS": ["REGISTERS"]
+    },
+    "STA": {
+      "OPCODE": ["00010"],
+      "OPERANDS": ["---"],
+      "KEYWORDS": ["REGISTERS"]
+    },
+    "LIM": {
+      "OPCODE": ["00011"],
+      "OPERANDS": ["---", "--------"],
+      "KEYWORDS": ["REGISTERS"]
+    },
+    "ADD": {
+      "OPCODE": ["00100"],
+      "OPERANDS": ["---"],
+      "KEYWORDS": ["REGISTERS"]
+    },
+    "SUA": {
+      "OPCODE": ["00101"],
+      "OPERANDS": ["---"],
+      "KEYWORDS": ["REGISTERS"]
+    },
+    "SUB": {
+      "OPCODE": ["00110"],
+      "OPERANDS": ["---"],
+      "KEYWORDS": ["REGISTERS"]
+    },
+    "AND": {
+      "OPCODE": ["00111"],
+      "OPERANDS": ["---"],
+      "KEYWORDS": ["REGISTERS"]
+    },
+    "NOR": {
+      "OPCODE": ["01000"],
+      "OPERANDS": ["---"],
+      "KEYWORDS": ["REGISTERS"]
+    },
+    "XOR": {
+      "OPCODE": ["01001"],
+      "OPERANDS": ["---"],
+      "KEYWORDS": ["REGISTERS"]
+    },
+    "NOT": {
+      "OPCODE": ["01010"],
+      "OPERANDS": ["---"],
+      "KEYWORDS": ["REGISTERS"]
+    },
+    "RSH": {
+      "OPCODE": ["01011"],
+      "OPERANDS": ["---"],
+      "KEYWORDS": ["REGISTERS"]
+    },
+    "LSH": {
+      "OPCODE": ["01100"],
+      "OPERANDS": ["---"],
+      "KEYWORDS": ["REGISTERS"]
+    },
+    "INC": {
+      "OPCODE": ["01101"],
+      "OPERANDS": ["---"],
+      "KEYWORDS": ["REGISTERS"]
+    },
+    "DEC": {
+      "OPCODE": ["01110"],
+      "OPERANDS": ["---"],
+      "KEYWORDS": ["REGISTERS"]
+    },
+    "NEG": {
+      "OPCODE": ["01111"],
+      "OPERANDS": ["---"],
+      "KEYWORDS": ["REGISTERS"]
+    },
+    "CMP": {
+      "OPCODE": ["10000"],
+      "OPERANDS": ["---"],
+      "KEYWORDS": ["REGISTERS"]
+    },
+    "DML": {
+      "OPCODE": ["10001"],
+      "OPERANDS": ["-----------"],
+      "KEYWORDS": []
+    },
+    "DMS": {
+      "OPCODE": ["10010"],
+      "OPERANDS": ["-----------"],
+      "KEYWORDS": []
+    },
+    "LPU": {
+      "OPCODE": ["10011"],
+      "OPERANDS": ["-----------"],
+      "KEYWORDS": []
+    },
+    "UPU": {
+      "OPCODE": ["10100"],
+      "OPERANDS": ["-----------"],
+      "KEYWORDS": []
+    },
+    "IML": {
+      "OPCODE": ["10101"],
+      "OPERANDS": ["III"],
+      "KEYWORDS": ["INDIRECT_MEMORY_ACCESS"]
+    },
+    "IMS": {
+      "OPCODE": ["10110"],
+      "OPERANDS": ["III"],
+      "KEYWORDS": ["INDIRECT_MEMORY_ACCESS"]
+    },
+    "JMP": {
+      "OPCODE": ["10111"],
+      "OPERANDS": ["-----------"],
+      "KEYWORDS": []
+    },
+    "CAL": {
+      "OPCODE": ["11000"],
+      "OPERANDS": ["-----------"],
+      "KEYWORDS": []
+    },
+    "RTN": {
+      "OPCODE": ["11001"],
+      "OPERANDS": ["000"],
+      "KEYWORDS": []
+    },
+    "BZE": {
+      "OPCODE": ["11010000"],
+      "OPERANDS": ["00", "------"],
+      "KEYWORDS": []
+    },
+    "BNZ": {
+      "OPCODE": ["11010001"],
+      "OPERANDS": ["00", "------"],
+      "KEYWORDS": []
+    },
+    "BOF": {
+      "OPCODE": ["11010010"],
+      "OPERANDS": ["00", "------"],
+      "KEYWORDS": []
+    },
+    "BNO": {
+      "OPCODE": ["11010011"],
+      "OPERANDS": ["00", "------"],
+      "KEYWORDS": []
+    },
+    "BLS": {
+      "OPCODE": ["11010100"],
+      "OPERANDS": ["00", "------"],
+      "KEYWORDS": []
+    },
+    "BNL": {
+      "OPCODE": ["11010101"],
+      "OPERANDS": ["00", "------"],
+      "KEYWORDS": []
+    },
+    "BMS": {
+      "OPCODE": ["11010110"],
+      "OPERANDS": ["00", "------"],
+      "KEYWORDS": []
+    },
+    "BNM": {
+      "OPCODE": ["11010111"],
+      "OPERANDS": ["00", "------"],
+      "KEYWORDS": []
+    },
+    "BEQ": {
+      "OPCODE": ["11011000"],
+      "OPERANDS": ["00", "------"],
+      "KEYWORDS": []
+    },
+    "BNE": {
+      "OPCODE": ["11011001"],
+      "OPERANDS": ["00", "------"],
+      "KEYWORDS": []
+    },
+    "BGR": {
+      "OPCODE": ["11011010"],
+      "OPERANDS": ["00", "------"],
+      "KEYWORDS": []
+    },
+    "BNG": {
+      "OPCODE": ["11011011"],
+      "OPERANDS": ["00", "------"],
+      "KEYWORDS": []
+    },
+    "BSM": {
+      "OPCODE": ["11011100"],
+      "OPERANDS": ["00", "------"],
+      "KEYWORDS": []
+    },
+    "BNS": {
+      "OPCODE": ["11011101"],
+      "OPERANDS": ["00", "------"],
+      "KEYWORDS": []
+    },
+    "BUA": {
+      "OPCODE": ["11011110"],
+      "OPERANDS": ["00", "------"],
+      "KEYWORDS": []
+    },
+    "BUB": {
+      "OPCODE": ["11011111"],
+      "OPERANDS": ["00", "------"],
+      "KEYWORDS": []
+    },
+    "INP": {
+      "OPCODE": ["11100"],
+      "OPERANDS": ["---"],
+      "KEYWORDS": []
+    },
+    "OUT": {
+      "OPCODE": ["11101"],
+      "OPERANDS": ["---"],
+      "KEYWORDS": []
+    }
+  }
+}
