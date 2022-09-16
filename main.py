@@ -1,5 +1,6 @@
 import json
 import os
+import re
 from types import SimpleNamespace
 
 here = os.path.dirname(os.path.abspath(__file__))
@@ -9,16 +10,22 @@ class Assembler:
 
     def __init__(self) -> None:
 
-        self.isa: object = None
         self.isa_file_name: list[str] = []
+        self.asm_file_name: str = ""
+
+        self.isa: object = None
         self.define: dict = {}
+
+        self.labels = []
+
+        self.asm_lines: list[str] = []
 
         error: bool = True
 
         while error:
             try:
-                asm_filename = input("Assembly file name: ")
-                self.asm_file = open(os.path.abspath(asm_filename), "r")
+                self.asm_file_name = input("Assembly file name: ")
+                self.asm_file = open(os.path.abspath(self.asm_file_name), "r")
 
             except FileNotFoundError:
                 print("File not found")
@@ -26,7 +33,7 @@ class Assembler:
                 self.asm_file.close()
 
             else:
-                error, asm_lines = self.find_declarations()
+                error, self.asm_lines = self.find_declarations()
                 self.assemble()
 
     def assemble(self):
@@ -34,7 +41,9 @@ class Assembler:
             open(os.path.abspath(f"ISA/{self.isa_file_name[0]}"), "r").read().lower(),
             object_hook=lambda d: SimpleNamespace(**d))
 
-        print(self.isa.instructions.add.opcode)
+        for line in self.asm_lines:
+            tokens = re.split(", |,|.| ", line.replace("\n", ""))
+            print(tokens)
 
     def read_lines(self) -> list[str]:
         asm_lines: list[str] = []
@@ -76,7 +85,10 @@ class Assembler:
                     return True, []
 
             elif len(tokens) == 0:
-                pass
+                continue
+
+            elif len(tokens) == 1 and tokens[0].isspace():
+                continue
 
             else:
                 output_lines.append(line)
