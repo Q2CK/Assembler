@@ -1,6 +1,5 @@
 import json
 import os
-import re
 from types import SimpleNamespace
 
 here = os.path.dirname(os.path.abspath(__file__))
@@ -16,9 +15,9 @@ class Assembler:
         self.isa: object = None
         self.define: dict = {}
 
-        self.labels = []
+        self.labels: dict = {}
 
-        self.asm_lines: list[str] = []
+        self.asm_lines: dict = {}
 
         error: bool = True
 
@@ -29,8 +28,6 @@ class Assembler:
 
             except FileNotFoundError:
                 print("File not found")
-                error = False
-                self.asm_file.close()
 
             else:
                 error, self.asm_lines = self.find_declarations()
@@ -42,27 +39,34 @@ class Assembler:
             object_hook=lambda d: SimpleNamespace(**d))
 
         for line in self.asm_lines:
-            tokens = re.split(", |,|.| ", line.replace("\n", ""))
-            print(tokens)
+            tokens = self.asm_lines[line].replace("\n", "").replace(",", "").split()
+            print(line, tokens)
 
-    def read_lines(self) -> list[str]:
-        asm_lines: list[str] = []
+        print(self.labels)
+
+    def read_lines(self) -> dict:
+        asm_lines: dict = {}
         asm_line: str = self.asm_file.readline()
 
+        line_nr = 0
+
         while asm_line != "":
-            asm_lines.append(asm_line)
+            asm_lines[line_nr] = asm_line
             asm_line = self.asm_file.readline()
+            line_nr += 1
 
         return asm_lines
 
-    def find_declarations(self) -> tuple[bool, list[str]]:
-        asm_lines = self.read_lines()
-        output_lines: list[str] = []
+    def find_declarations(self) -> tuple[bool, dict]:
+        asm_lines: dict = self.read_lines()
+        output_lines: dict = {}
+
+        output_line_nr = 0
 
         for line in asm_lines:
-            tokens: list[str] = line.split()
+            tokens: list[str] = asm_lines[line].split()
 
-            if len(tokens) == 2 and tokens[0] in ["#isa", "#ISA", "#Isa"] :
+            if len(tokens) == 2 and tokens[0] in ["#isa", "#ISA", "#Isa"]:
                 self.isa_file_name.append(tokens[1] + ".json")
 
             elif len(tokens) == 3 and tokens[0] in ["#DEFINE", "#Define", "#define"]:
@@ -82,7 +86,11 @@ class Assembler:
 
                 else:
                     print(f"Chars '{errors}' are not allowed in define statements")
-                    return True, []
+                    return True, {}
+
+            elif len(tokens) == 1 and tokens[0].startswith("."):
+                if tokens[0].replace(".", "").isalnum():
+                    self.labels[tokens[0].replace(".", "")] = output_line_nr
 
             elif len(tokens) == 0:
                 continue
@@ -91,15 +99,16 @@ class Assembler:
                 continue
 
             else:
-                output_lines.append(line)
+                output_lines[output_line_nr] = asm_lines[line]
+                output_line_nr += 1
 
         if len(self.isa_file_name) > 1:
             print("Single ISA file declaration required")
-            return True, []
+            return True, {}
 
         elif len(self.isa_file_name) < 1:
             print("ISA file declaration required")
-            return True, []
+            return True, {}
 
         else:
             return False, output_lines
