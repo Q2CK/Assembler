@@ -4,7 +4,7 @@
 
 lim $0, 0
 lim $1, 1
-//costam
+// costam
 .loop
 lda $0
 add $1
