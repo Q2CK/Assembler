@@ -1,5 +1,5 @@
 #isa AnPU2
-#define bajo 3
+#define bajo 2
 #define jajo 4
 
 lim $0, 0
