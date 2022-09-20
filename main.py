@@ -72,6 +72,10 @@ class Assembler:
         asm_lines: dict = self.read_lines()
         output_lines: dict = {}
 
+        for idx in asm_lines:  # Remove comments
+            if asm_lines[idx].strip().startswith("//"):
+                asm_lines[idx] = ""
+
         output_line_nr = 0
 
         for line in asm_lines:
