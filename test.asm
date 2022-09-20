@@ -11,4 +11,4 @@ sta $0
 add $1
 sta $1
 bno loop
-add jajo
+add bajo
