@@ -1,6 +1,12 @@
 {
+  "cpu_data": {
+    "instruction_length": 8,
+    "program_memory_lines": 2048
+  },
   "define": {
-    "general": {},
+    "general": {
+
+    },
     "indirect_memory_access": {
       "none": "0",
       "inc": "1",
@@ -28,222 +34,222 @@
   },
   "instructions": {
     "nop": {
-      "opcode": ["00000"],
+      "opcode": "00000",
       "operands": ["000"],
       "keywords": ["registers"]
     },
     "lda": {
-      "opcode": ["00001"],
+      "opcode": "00001",
       "operands": ["---"],
       "keywords": ["registers"]
     },
     "sta": {
-      "opcode": ["00010"],
+      "opcode": "00010",
       "operands": ["---"],
       "keywords": ["registers"]
     },
     "lim": {
-      "opcode": ["00011"],
+      "opcode": "00011",
       "operands": ["---", "--------"],
       "keywords": ["registers"]
     },
     "add": {
-      "opcode": ["00100"],
+      "opcode": "00100",
       "operands": ["---"],
       "keywords": ["registers"]
     },
     "sua": {
-      "opcode": ["00101"],
+      "opcode": "00101",
       "operands": ["---"],
       "keywords": ["registers"]
     },
     "sub": {
-      "opcode": ["00110"],
+      "opcode": "00110",
       "operands": ["---"],
       "keywords": ["registers"]
     },
     "and": {
-      "opcode": ["00111"],
+      "opcode": "00111",
       "operands": ["---"],
       "keywords": ["registers"]
     },
     "nor": {
-      "opcode": ["01000"],
+      "opcode": "01000",
       "operands": ["---"],
       "keywords": ["registers"]
     },
     "xor": {
-      "opcode": ["01001"],
+      "opcode": "01001",
       "operands": ["---"],
       "keywords": ["registers"]
     },
     "not": {
-      "opcode": ["01010"],
+      "opcode": "01010",
       "operands": ["---"],
       "keywords": ["registers"]
     },
     "rsh": {
-      "opcode": ["01011"],
+      "opcode": "01011",
       "operands": ["---"],
       "keywords": ["registers"]
     },
     "lsh": {
-      "opcode": ["01100"],
+      "opcode": "01100",
       "operands": ["---"],
       "keywords": ["registers"]
     },
     "inc": {
-      "opcode": ["01101"],
+      "opcode": "01101",
       "operands": ["---"],
       "keywords": ["registers"]
     },
     "dec": {
-      "opcode": ["01110"],
+      "opcode": "01110",
       "operands": ["---"],
       "keywords": ["registers"]
     },
     "neg": {
-      "opcode": ["01111"],
+      "opcode": "01111",
       "operands": ["---"],
       "keywords": ["registers"]
     },
     "cmp": {
-      "opcode": ["10000"],
+      "opcode": "10000",
       "operands": ["---"],
       "keywords": ["registers"]
     },
     "dml": {
-      "opcode": ["10001"],
+      "opcode": "10001",
       "operands": ["-----------"],
       "keywords": []
     },
     "dms": {
-      "opcode": ["10010"],
+      "opcode": "10010",
       "operands": ["-----------"],
       "keywords": []
     },
     "lpu": {
-      "opcode": ["10011"],
+      "opcode": "10011",
       "operands": ["-----------"],
       "keywords": []
     },
     "upu": {
-      "opcode": ["10100"],
+      "opcode": "10100",
       "operands": ["-----------"],
       "keywords": []
     },
     "iml": {
-      "opcode": ["10101"],
+      "opcode": "10101",
       "operands": ["iii"],
       "keywords": ["indirect_memory_access"]
     },
     "ims": {
-      "opcode": ["10110"],
+      "opcode": "10110",
       "operands": ["iii"],
       "keywords": ["indirect_memory_access"]
     },
     "jmp": {
-      "opcode": ["10111"],
+      "opcode": "10111",
       "operands": ["-----------"],
       "keywords": []
     },
     "cal": {
-      "opcode": ["11000"],
+      "opcode": "11000",
       "operands": ["-----------"],
       "keywords": []
     },
     "rtn": {
-      "opcode": ["11001"],
+      "opcode": "11001",
       "operands": ["000"],
       "keywords": []
     },
     "bze": {
-      "opcode": ["11010000"],
+      "opcode": "11010000",
       "operands": ["00", "------"],
       "keywords": []
     },
     "bnz": {
-      "opcode": ["11010001"],
+      "opcode": "11010001",
       "operands": ["00", "------"],
       "keywords": []
     },
     "bof": {
-      "opcode": ["11010010"],
+      "opcode": "11010010",
       "operands": ["00", "------"],
       "keywords": []
     },
     "bno": {
-      "opcode": ["11010011"],
+      "opcode": "11010011",
       "operands": ["00", "------"],
       "keywords": []
     },
     "bls": {
-      "opcode": ["11010100"],
+      "opcode": "11010100",
       "operands": ["00", "------"],
       "keywords": []
     },
     "bnl": {
-      "opcode": ["11010101"],
+      "opcode": "11010101",
       "operands": ["00", "------"],
       "keywords": []
     },
     "bms": {
-      "opcode": ["11010110"],
+      "opcode": "11010110",
       "operands": ["00", "------"],
       "keywords": []
     },
     "bnm": {
-      "opcode": ["11010111"],
+      "opcode": "11010111",
       "operands": ["00", "------"],
       "keywords": []
     },
     "beq": {
-      "opcode": ["11011000"],
+      "opcode": "11011000",
       "operands": ["00", "------"],
       "keywords": []
     },
     "bne": {
-      "opcode": ["11011001"],
+      "opcode": "11011001",
       "operands": ["00", "------"],
       "keywords": []
     },
     "bgr": {
-      "opcode": ["11011010"],
+      "opcode": "11011010",
       "operands": ["00", "------"],
       "keywords": []
     },
     "bng": {
-      "opcode": ["11011011"],
+      "opcode": "11011011",
       "operands": ["00", "------"],
       "keywords": []
     },
     "bsm": {
-      "opcode": ["11011100"],
+      "opcode": "11011100",
       "operands": ["00", "------"],
       "keywords": []
     },
     "bns": {
-      "opcode": ["11011101"],
+      "opcode": "11011101",
       "operands": ["00", "------"],
       "keywords": []
     },
     "bua": {
-      "opcode": ["11011110"],
+      "opcode": "11011110",
       "operands": ["00", "------"],
       "keywords": []
     },
     "bub": {
-      "opcode": ["11011111"],
+      "opcode": "11011111",
       "operands": ["00", "------"],
       "keywords": []
     },
     "inp": {
-      "opcode": ["11100"],
+      "opcode": "11100",
       "operands": ["---"],
       "keywords": []
     },
     "out": {
-      "opcode": ["11101"],
+      "opcode": "11101",
       "operands": ["---"],
       "keywords": []
     }

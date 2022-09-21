@@ -17,6 +17,7 @@ class Assembler:
             self.isa_file_name: list[str] = []                       # Name of the config file for a given CPU
             self.asm_file_name: str = input("Assembly file name: ")  # Name of the assembly file
             self.asm_file = None
+            self.bin_file = open(self.asm_file_name[:len(self.asm_file_name) - 4] + ".bin", "w")
 
             self.isa: dict = {}        # Dictionary of assembly instructions and their properties
             self.define: dict = {}     # Dictionary of user-defined keywords in the .asm file
@@ -33,6 +34,7 @@ class Assembler:
                 self.asm_lines = self.find_declarations()
 
             else:
+
                 self.errors[0] = f"ASM file '{self.asm_file_name}' not found"
 
             if len(self.errors) == 0:
@@ -44,14 +46,19 @@ class Assembler:
                 output_string = self.assemble()
 
             else:
+
                 output_string = ""
 
                 for error in self.errors:
+
                     output_string += self.errors[error]
 
                 self.asm_file.close()
 
             print(output_string)
+
+            self.bin_file.write(output_string)
+            self.bin_file.close()
 
     def read_lines(self) -> dict:                      # Read the .asm file line-by-line and store to a dict
 
@@ -61,6 +68,7 @@ class Assembler:
         line_nr = 0
 
         while asm_line != "":                          # Only append a new line if not empty
+
             asm_lines[line_nr] = asm_line
             asm_line = self.asm_file.readline()
             line_nr += 1
@@ -73,7 +81,9 @@ class Assembler:
         output_lines: dict = {}
 
         for idx in asm_lines:  # Remove comments from asm lines
+
             if asm_lines[idx].strip().startswith("//"):
+
                 asm_lines[idx] = ""
 
         output_line_nr = 0
@@ -98,23 +108,30 @@ class Assembler:
                 errors: str = ""
 
                 for char in tokens[1]:
+
                     if not char.isalnum():
+
                         errors += char
 
                 for char in tokens[2]:
+
                     if not char.isalnum():
+
                         errors += char
 
                 if len(errors) == 0:
+
                     self.define[tokens[1]] = tokens[2]
 
                 else:
+
                     self.errors[output_line_nr] = f"Chars '{errors}' are not allowed in define statements"
                     return {}
 
             elif len(tokens) == 1 and tokens[0].startswith("."):
 
                 if tokens[0].replace(".", "").isalnum():
+
                     self.labels[tokens[0].replace(".", "")] = output_line_nr
 
             elif len(tokens) == 0:
@@ -141,17 +158,24 @@ class Assembler:
             return {}
 
         else:
+
             return output_lines
 
     def replace(self) -> dict:  # Replace defined keywords and labels
 
-        self.isa = json.loads(open(os.path.abspath(f"ISA/{self.isa_file_name[0]}"), "r").read().lower())
+        self.isa = json.loads(open(os.path.abspath(f"ISA/{self.isa_file_name[0]}"), "r")
+                              .read()
+                              .lower())
 
         tokenized_lines: dict = {}
 
         for line in self.asm_lines:
 
-            tokens: list[str] = self.asm_lines[line].replace("\n", "").replace(",", " ").split()
+            tokens: list[str] = self.asm_lines[line]\
+                .replace("\n", "")\
+                .replace(",", " ")\
+                .lower()\
+                .split()
 
             for idx, token in enumerate(tokens[1:]):
 
@@ -162,25 +186,90 @@ class Assembler:
                     keywords = self.isa["define"][keywords_base]
 
                     for keyword in keywords:                        # Check for keywords from each base and replace them
+
                         if keyword == token:
+
                             tokens[idx + 1] = self.isa["define"][keywords_base][keyword]
 
-                if token in self.labels:                            # Check for labels and replace them with addresses
+                if token in self.labels:  # Check for labels and replace them with addresses
                     tokens[idx + 1] = str(self.labels[token])
 
-                if token in self.define:                            # Check for defined keywords and replace them
+                if token in self.define:  # Check for defined keywords and replace them
+
                     tokens[idx + 1] = str(self.define[token])
 
+                if token in self.isa["define"]["general"]:
+
+                    tokens[idx + 1] = str(self.isa["define"]["general"][token])
+
                 if not tokens[idx + 1].isnumeric():
+
                     self.errors[line] = f"Error: Unknown token '{tokens[idx + 1]}' in program line {line}"
+
+            if tokens[0] in self.isa["instructions"]:
+
+                if len(tokens) - 1 > len(self.isa["instructions"][tokens[0]]["operands"]):
+
+                    self.errors[line] = f"Error: Too many operands for '{tokens[0]}' in program line {line} - " \
+                                        f"found {len(tokens) - 1}, expected " \
+                                        f"{len(self.isa['instructions'][tokens[0]]['operands'])}"
+
+                elif len(tokens) - 1 < len(self.isa["instructions"][tokens[0]]["operands"]):
+
+                    self.errors[line] = f"Error: Too few operands for '{tokens[0]}' in program line {line} - " \
+                                        f"found {len(tokens) - 1}, expected " \
+                                        f"{len(self.isa['instructions'][tokens[0]]['operands'])}"
+
+            else:
+
+                self.errors[line] = f"Error: Unknown instruction mnemonic '{tokens[0]}' in program line {line}"
 
             tokenized_lines[line] = tokens
 
         return tokenized_lines
 
-    def assemble(self):
+    def assemble(self) -> str:
 
-        return self.asm_lines
+        output_string: str = ""
+
+        for line in self.asm_lines:
+
+            new_line: str = ""
+
+            tokens: list = self.asm_lines[line]
+
+            for idx, token in enumerate(tokens):
+
+                if idx == 0:
+
+                    new_line += self.isa["instructions"][tokens[0]]["opcode"]  # Opcode in binary
+
+                else:
+                    operand_template: str = self.isa["instructions"][tokens[0]]["operands"][idx - 1]
+                    operand_bits: int = operand_template.count("-")
+                    operand_binary: str = format(int(token), f"0{operand_bits}b")
+
+                    position: int = 0
+
+                    for char in operand_template:  # Append binary representations of operands, according to templates
+
+                        if char == "0":
+
+                            new_line += "0"
+
+                        elif char == "-":
+
+                            new_line += operand_binary[position]
+                            position += 1
+
+            max_length: int = self.isa["cpu_data"]["instruction_length"]
+            lines_split: list = [new_line[i:i + max_length] for i in range(0, len(new_line), max_length)]
+
+            for fragment in lines_split:  # Multi-cycle instructions get separated into multiple lines
+
+                output_string += fragment + "\n"
+
+        return output_string
 
 
 assembler: Assembler = Assembler()

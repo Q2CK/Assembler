@@ -11,5 +11,5 @@ add $1
 sta $0
 add $1
 sta $1
-bno loop
+bno loop, 2
 add bajo
