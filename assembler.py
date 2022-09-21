@@ -17,7 +17,6 @@ class Assembler:
             self.isa_file_name: list[str] = []                       # Name of the config file for a given CPU
             self.asm_file_name: str = input("Assembly file name: ")  # Name of the assembly file
             self.asm_file = None
-            self.bin_file = open(self.asm_file_name[:len(self.asm_file_name) - 4] + ".bin", "w")
 
             self.isa: dict = {}        # Dictionary of assembly instructions and their properties
             self.define: dict = {}     # Dictionary of user-defined keywords in the .asm file
@@ -27,9 +26,9 @@ class Assembler:
 
             self.errors: dict = {}     # Dictionary of found errors, indexed by program line number
 
-            if os.path.isfile(os.path.abspath(self.asm_file_name)):
+            if os.path.isfile(os.path.abspath("ASM/" + self.asm_file_name)):
 
-                self.asm_file = open(os.path.abspath(self.asm_file_name), "r")
+                self.asm_file = open(os.path.abspath("ASM/" + self.asm_file_name), "r")
 
                 self.asm_lines = self.find_declarations()
 
@@ -45,6 +44,12 @@ class Assembler:
 
                 output_string = self.assemble()
 
+                self.bin_file = open(
+                    os.path.abspath(
+                        "BIN/" + self.asm_file_name[:len(self.asm_file_name) - 4] + ".bin"), "w")
+                self.bin_file.write(output_string)
+                self.bin_file.close()
+
             else:
 
                 output_string = ""
@@ -53,12 +58,11 @@ class Assembler:
 
                     output_string += self.errors[error]
 
-                self.asm_file.close()
+                if self.asm_file is not None:
+
+                    self.asm_file.close()
 
             print(output_string)
-
-            self.bin_file.write(output_string)
-            self.bin_file.close()
 
     def read_lines(self) -> dict:                      # Read the .asm file line-by-line and store to a dict
 
