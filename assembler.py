@@ -1,8 +1,10 @@
 import json
 import os
+import math
 
 # File path
 here = os.path.dirname(os.path.abspath(__file__))
+print(here)
 
 
 # Main class
@@ -26,9 +28,11 @@ class Assembler:
 
             self.errors: dict = {}     # Dictionary of found errors, indexed by program line number
 
-            if os.path.isfile(os.path.abspath("ASM/" + self.asm_file_name)):
+            print(os.path.join("ASM/" + self.asm_file_name))
 
-                self.asm_file = open(os.path.abspath("ASM/" + self.asm_file_name), "r")
+            if os.path.isfile(os.path.join(here, "ASM/" + self.asm_file_name)):
+
+                self.asm_file = open(os.path.join(here, "ASM/" + self.asm_file_name), "r")
 
                 self.asm_lines = self.find_declarations()
 
@@ -45,8 +49,8 @@ class Assembler:
                 output_string = self.assemble()
 
                 self.bin_file = open(
-                    os.path.abspath(
-                        "BIN/" + self.asm_file_name[:len(self.asm_file_name) - 4] + ".bin"), "w")
+                    os.path.join(here, "BIN/" + self.asm_file_name[:len(self.asm_file_name) - 4] + ".bin"), "w")
+
                 self.bin_file.write(output_string)
                 self.bin_file.close()
 
@@ -62,7 +66,7 @@ class Assembler:
 
                     self.asm_file.close()
 
-            print(output_string)
+            print("\n" + output_string)
 
     def read_lines(self) -> dict:                      # Read the .asm file line-by-line and store to a dict
 
@@ -97,12 +101,12 @@ class Assembler:
             tokens: list[str] = asm_lines[line].split()
 
             if len(tokens) == 2 and tokens[0] in ["#isa", "#ISA", "#Isa"] \
-                    and os.path.isfile(os.path.abspath(f"ISA/{tokens[1] + '.json'}")):
+                    and os.path.isfile(os.path.join(here, f"ISA/{tokens[1] + '.json'}")):
 
                 self.isa_file_name.append(tokens[1] + ".json")
 
             elif len(tokens) == 2 and tokens[0] in ["#isa", "#ISA", "#Isa"] \
-                    and not os.path.isfile(os.path.abspath(f"ISA/{tokens[1] + '.json'}")):
+                    and not os.path.isfile(os.path.join(here, f"ISA/{tokens[1] + '.json'}")):
 
                 self.errors[output_line_nr] = f"ISA file {tokens[1]}.json not found"
                 return {}
@@ -167,7 +171,7 @@ class Assembler:
 
     def replace(self) -> dict:  # Replace defined keywords and labels
 
-        self.isa = json.loads(open(os.path.abspath(f"ISA/{self.isa_file_name[0]}"), "r")
+        self.isa = json.loads(open(os.path.join(here, f"ISA/{self.isa_file_name[0]}"), "r")
                               .read()
                               .lower())
 
@@ -176,10 +180,10 @@ class Assembler:
         for line in self.asm_lines:
 
             tokens: list[str] = self.asm_lines[line]\
-                .replace("\n", "")\
-                .replace(",", " ")\
-                .lower()\
-                .split()
+                                    .replace("\n", "")\
+                                    .replace(",", " ")\
+                                    .lower()\
+                                    .split()
 
             for idx, token in enumerate(tokens[1:]):
 
@@ -236,6 +240,8 @@ class Assembler:
 
         output_string: str = ""
 
+        line_counter: int = 0
+
         for line in self.asm_lines:
 
             new_line: str = ""
@@ -267,13 +273,19 @@ class Assembler:
                             position += 1
 
             max_length: int = self.isa["cpu_data"]["instruction_length"]
+
+            # Find number of required hex chars for line number, based on memory size
+            line_nr_hex_chars: int = math.ceil(math.log(self.isa["cpu_data"]["program_memory_lines"], 16))
+
             lines_split: list = [new_line[i:i + max_length] for i in range(0, len(new_line), max_length)]
 
             for fragment in lines_split:  # Multi-cycle instructions get separated into multiple lines
 
-                output_string += fragment + "\n"
+                output_string += "0x" + format(line_counter, f"0{line_nr_hex_chars}x").upper() + ": " + fragment + "\n"
+                line_counter += 1
 
         return output_string
 
 
 assembler: Assembler = Assembler()
+input("Press Enter to quit...")
