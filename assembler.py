@@ -16,7 +16,6 @@ class Assembler:
         while True:
 
             self.isa_file_name: list[str] = []  # Name of the config file for a given CPU
-            final_isa_file_name: str = ""
             self.asm_file_name: str = input("Assembly file name: ")  # Name of the assembly file
             self.asm_file = None
 
@@ -58,8 +57,7 @@ class Assembler:
             print("\n" + output_string)
 
             if len(self.isa_file_name) == 1:
-                final_isa_file_name = self.isa_file_name[0]
-                print(f"CPU config:     ISA/{final_isa_file_name}")
+                print(f"CPU config:     ISA/{self.isa_file_name[0]}")
                 print(f"Program size:   {self.length} lines")
                 print(f"Saved to:       BIN/{self.asm_file_name[:len(self.asm_file_name) - 4]}.bin" + "\n")
 
