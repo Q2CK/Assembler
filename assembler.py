@@ -11,29 +11,31 @@ print(here)
 class Assembler:
     def __init__(self) -> None:
 
-        self.errors: dict = {"": ""}
+        self.errors: list = [""]
 
-        while len(self.errors) != 0:
+        while True:
 
-            self.isa_file_name: list[str] = []                       # Name of the config file for a given CPU
+            self.isa_file_name: list[str] = []  # Name of the config file for a given CPU
+            final_isa_file_name: str = ""
             self.asm_file_name: str = input("Assembly file name: ")  # Name of the assembly file
             self.asm_file = None
 
-            self.isa: dict = {}        # Dictionary of assembly instructions and their properties
-            self.define: dict = {}     # Dictionary of user-defined keywords in the .asm file
-            self.labels: dict = {}     # Dictionary of branching labels and their memory addresses
+            self.isa: dict = {}  # Dictionary of assembly instructions and their properties
+            self.define: dict = {}  # Dictionary of user-defined keywords in the .asm file
+            self.labels: dict = {}  # Dictionary of branching labels and their memory addresses
 
             self.asm_lines: dict = {}  # Dictionary of .asm file lines, indexed by program line number
-            self.errors: dict = {}     # Dictionary of found errors, indexed by program line number
+            self.errors: list = []  # Dictionary of found errors, indexed by program line number
+            self.length: int = 0
 
-            print(os.path.join("ASM/" + self.asm_file_name))
+            output_string: str = ""  # Output
 
             if os.path.isfile(os.path.join(here, "ASM/" + self.asm_file_name)):
                 self.asm_file = open(os.path.join(here, "ASM/" + self.asm_file_name), "r")
                 self.asm_lines = self.find_declarations()
 
             else:
-                self.errors[0] = f"ASM file '{self.asm_file_name}' not found"
+                self.errors += f"ASM file '{self.asm_file_name}' not found"
 
             if len(self.errors) == 0:
                 self.asm_lines = self.replace()
@@ -46,25 +48,29 @@ class Assembler:
                 self.bin_file.write(output_string)
                 self.bin_file.close()
 
-            else:
-                output_string = ""
-
+            if len(self.errors) != 0:
                 for error in self.errors:
-                    output_string += self.errors[error]
+                    output_string += error + "\n"
 
                 if self.asm_file is not None:
                     self.asm_file.close()
 
             print("\n" + output_string)
 
-    def read_lines(self) -> dict:                      # Read the .asm file line-by-line and store to a dict
+            if len(self.isa_file_name) == 1:
+                final_isa_file_name = self.isa_file_name[0]
+                print(f"CPU config:     ISA/{final_isa_file_name}")
+                print(f"Program size:   {self.length} lines")
+                print(f"Saved to:       BIN/{self.asm_file_name[:len(self.asm_file_name) - 4]}.bin" + "\n")
+
+    def read_lines(self) -> dict:  # Read the .asm file line-by-line and store to a dict
 
         asm_lines: dict = {}
         asm_line: str = self.asm_file.readline()
 
         line_nr = 0
 
-        while asm_line != "":                          # Only append a new line if not empty
+        while asm_line != "":  # Only append a new line if not empty
             asm_lines[line_nr] = asm_line
             asm_line = self.asm_file.readline()
             line_nr += 1
@@ -90,7 +96,7 @@ class Assembler:
 
             elif len(tokens) == 2 and tokens[0] in ["#isa", "#ISA", "#Isa"] \
                     and not os.path.isfile(os.path.join(here, f"ISA/{tokens[1] + '.json'}")):
-                self.errors[output_line_nr] = f"ISA file {tokens[1]}.json not found"
+                self.errors.append(f"ISA file {tokens[1]}.json not found")
                 return {}
 
             elif len(tokens) == 3 and tokens[0] in ["#DEFINE", "#Define", "#define"]:
@@ -108,7 +114,7 @@ class Assembler:
                     self.define[tokens[1]] = tokens[2]
 
                 else:
-                    self.errors[output_line_nr] = f"Chars '{errors}' are not allowed in define statements"
+                    self.errors.append(f"Chars '{errors}' are not allowed in define statements")
                     return {}
 
             elif len(tokens) == 1 and tokens[0].startswith("."):
@@ -145,7 +151,11 @@ class Assembler:
             tokens: list[str] = self.asm_lines[line].replace("\n", "").replace(",", " ").lower().split()
 
             for idx, token in enumerate(tokens[1:]):
-                keywords_bases = self.isa["instructions"][tokens[0]]["keywords"]  # Find predefined keywords bases names
+                if tokens[0] in self.isa["instructions"]:
+                    keywords_bases = self.isa["instructions"][tokens[0]]["keywords"]  # Find predefined keywords bases
+
+                else:
+                    keywords_bases = {}
 
                 for keywords_base in keywords_bases:
                     keywords = self.isa["define"][keywords_base]
@@ -164,21 +174,21 @@ class Assembler:
                     tokens[idx + 1] = str(self.isa["define"]["general"][token])
 
                 if not tokens[idx + 1].isnumeric():
-                    self.errors[line] = f"Error: Unknown token '{tokens[idx + 1]}' in program line {line}"
+                    self.errors.append(f"Error: Unknown token '{tokens[idx + 1]}' in program line {line}")
 
             if tokens[0] in self.isa["instructions"]:
                 if len(tokens) - 1 > len(self.isa["instructions"][tokens[0]]["operands"]):
-                    self.errors[line] = f"Error: Too many operands for '{tokens[0]}' in program line {line} - " \
-                                        f"found {len(tokens) - 1}, expected " \
-                                        f"{len(self.isa['instructions'][tokens[0]]['operands'])}"
+                    self.errors.append(f"Error: Too many operands for '{tokens[0]}' in program line {line} - "
+                                       f"found {len(tokens) - 1}, expected " 
+                                       f"{len(self.isa['instructions'][tokens[0]]['operands'])}")
 
                 elif len(tokens) - 1 < len(self.isa["instructions"][tokens[0]]["operands"]):
-                    self.errors[line] = f"Error: Too few operands for '{tokens[0]}' in program line {line} - " \
-                                        f"found {len(tokens) - 1}, expected " \
-                                        f"{len(self.isa['instructions'][tokens[0]]['operands'])}"
+                    self.errors.append(f"Error: Too few operands for '{tokens[0]}' in program line {line} - "
+                                       f"found {len(tokens) - 1}, expected "
+                                       f"{len(self.isa['instructions'][tokens[0]]['operands'])}")
 
             else:
-                self.errors[line] = f"Error: Unknown instruction mnemonic '{tokens[0]}' in program line {line}"
+                self.errors.append(f"Error: Unknown instruction mnemonic '{tokens[0]}' in program line {line}")
 
             tokenized_lines[line] = tokens
 
@@ -187,6 +197,7 @@ class Assembler:
     def assemble(self) -> str:
         output_string: str = ""
         line_counter: int = 0
+        capacity: int = self.isa["cpu_data"]["program_memory_lines"]
 
         for line in self.asm_lines:
             new_line: str = ""
@@ -204,24 +215,30 @@ class Assembler:
                     position: int = 0
 
                     for char in operand_template:  # Append binary representations of operands, according to templates
-                        if char == "0":
-                            new_line += "0"
-
-                        elif char == "-":
+                        if char == "-":
                             new_line += operand_binary[position]
                             position += 1
+
+                        else:
+                            new_line += char
 
             max_length: int = self.isa["cpu_data"]["instruction_length"]
 
             # Find number of required hex chars for line number, based on memory size
-            line_nr_hex_chars: int = math.ceil(math.log(self.isa["cpu_data"]["program_memory_lines"], 16))
+            line_nr_hex_chars: int = math.ceil(math.log(capacity, 16))
             lines_split: list = [new_line[i:i + max_length] for i in range(0, len(new_line), max_length)]
 
             for fragment in lines_split:  # Multi-cycle instructions get separated into multiple lines
                 output_string += "0x" + format(line_counter, f"0{line_nr_hex_chars}x").upper() + ": " + fragment + "\n"
                 line_counter += 1
 
-        return output_string
+        self.length = line_counter
+
+        if self.length > capacity:
+            self.errors.append(f"Program memory exceeded - {line_counter + 1} lines generated, maximum is {capacity}")
+            return ""
+        else:
+            return output_string
 
 
 if __name__ == "__main__":
