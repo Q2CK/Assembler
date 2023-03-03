@@ -1,6 +1,8 @@
 #isa AnPUNano
 
-imm $0, 0
+//fibonacci
+
+imm $0, 0, 123456
 imm $1, 1
 .loop
 add $0, $0, $1
